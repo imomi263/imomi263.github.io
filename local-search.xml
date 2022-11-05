@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>hello-world2</title>
+    <link href="/2022/11/05/hello-world2/"/>
+    <url>/2022/11/05/hello-world2/</url>
+    
+    <content type="html"><![CDATA[<h3 id="My-first-blog"><a href="#My-first-blog" class="headerlink" title="My first blog"></a>My first blog</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hello world<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>hello world</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Hello World</title>
     <link href="/2022/11/04/hello-world/"/>
     <url>/2022/11/04/hello-world/</url>
