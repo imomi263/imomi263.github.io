@@ -4,17 +4,17 @@
   
   
   <entry>
-    <title>hello-world2</title>
+    <title>随笔&amp;摘抄1</title>
     <link href="/2022/11/05/hello-world2/"/>
     <url>/2022/11/05/hello-world2/</url>
     
-    <content type="html"><![CDATA[<h3 id="My-first-blog"><a href="#My-first-blog" class="headerlink" title="My first blog"></a>My first blog</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hello world<br></code></pre></td></tr></table></figure>]]></content>
+    <content type="html"><![CDATA[<pre><code class="hljs">你可以浪迹天涯，但是每到一个地方就会找网络或者电话信号给某个人报平安，就像风筝飞得再高都有抓着风筝线的人。</code></pre>]]></content>
     
     
     
     <tags>
       
-      <tag>hello world</tag>
+      <tag>随笔&amp;摘抄</tag>
       
     </tags>
     
