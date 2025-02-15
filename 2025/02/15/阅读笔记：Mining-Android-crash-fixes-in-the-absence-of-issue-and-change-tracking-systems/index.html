@@ -1,0 +1,352 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>阅读笔记：Mining Android crash fixes in the absence of issue- and change-tracking systems | 时光之歌</title><meta name="author" content="imomi263"><meta name="copyright" content="imomi263"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="&#x6280;&#x672F;&#x65B9;&#x6848;&#x8BE6;&#x7EC6;&#x89E3;&#x8BFB;&#x7814;&#x7A76;&#x80CC;&#x666F;&#x4E0E;&#x6311;&#x6218;Android&#x5E94;&#x7528;&#x56E0;&#x8BBE;&#x5907;&#x788E;&#x7247;&#x5316;&#x3001;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阅读笔记：Mining Android crash fixes in the absence of issue- and change-tracking systems">
+<meta property="og:url" content="https://imomi263.github.io/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AMining-Android-crash-fixes-in-the-absence-of-issue-and-change-tracking-systems/index.html">
+<meta property="og:site_name" content="时光之歌">
+<meta property="og:description" content="&#x6280;&#x672F;&#x65B9;&#x6848;&#x8BE6;&#x7EC6;&#x89E3;&#x8BFB;&#x7814;&#x7A76;&#x80CC;&#x666F;&#x4E0E;&#x6311;&#x6218;Android&#x5E94;&#x7528;&#x56E0;&#x8BBE;&#x5907;&#x788E;&#x7247;&#x5316;&#x3001;&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://imomi263.github.io/img/flower.jpg">
+<meta property="article:published_time" content="2025-02-15T06:46:55.000Z">
+<meta property="article:modified_time" content="2025-02-15T06:47:32.528Z">
+<meta property="article:author" content="imomi263">
+<meta property="article:tag" content="论文阅读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://imomi263.github.io/img/flower.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://imomi263.github.io/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AMining-Android-crash-fixes-in-the-absence-of-issue-and-change-tracking-systems/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: imomi263","link":"链接: ","source":"来源: 时光之歌","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '阅读笔记：Mining Android crash fixes in the absence of issue- and change-tracking systems',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-02-15 14:47:32'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/cat.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">54</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/flower.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="时光之歌"><span class="site-name">时光之歌</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">阅读笔记：Mining Android crash fixes in the absence of issue- and change-tracking systems</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-15T06:46:55.000Z" title="发表于 2025-02-15 14:46:55">2025-02-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-02-15T06:47:32.528Z" title="更新于 2025-02-15 14:47:32">2025-02-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="阅读笔记：Mining Android crash fixes in the absence of issue- and change-tracking systems"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="&#x6280;&#x672F;&#x65B9;&#x6848;&#x8BE6;&#x7EC6;&#x89E3;&#x8BFB;"><a href="#&#x6280;&#x672F;&#x65B9;&#x6848;&#x8BE6;&#x7EC6;&#x89E3;&#x8BFB;" class="headerlink" title="&#x6280;&#x672F;&#x65B9;&#x6848;&#x8BE6;&#x7EC6;&#x89E3;&#x8BFB;"></a>&#x6280;&#x672F;&#x65B9;&#x6848;&#x8BE6;&#x7EC6;&#x89E3;&#x8BFB;</h3><h4 id="&#x7814;&#x7A76;&#x80CC;&#x666F;&#x4E0E;&#x6311;&#x6218;"><a href="#&#x7814;&#x7A76;&#x80CC;&#x666F;&#x4E0E;&#x6311;&#x6218;" class="headerlink" title="&#x7814;&#x7A76;&#x80CC;&#x666F;&#x4E0E;&#x6311;&#x6218;"></a><strong>&#x7814;&#x7A76;&#x80CC;&#x666F;&#x4E0E;&#x6311;&#x6218;</strong></h4><p>Android&#x5E94;&#x7528;&#x56E0;&#x8BBE;&#x5907;&#x788E;&#x7247;&#x5316;&#x3001;&#x5F00;&#x53D1;&#x538B;&#x529B;&#x5927;&#x53CA;API&#x8BEF;&#x7528;&#x7B49;&#x95EE;&#x9898;&#x9891;&#x7E41;&#x5D29;&#x6E83;&#xFF0C;&#x4F46;&#x7F3A;&#x4E4F;&#x7CFB;&#x7EDF;&#x5316;&#x7684;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6570;&#x636E;&#x96C6;&#x3002;&#x4F20;&#x7EDF;&#x65B9;&#x6CD5;&#x4F9D;&#x8D56;&#x5F00;&#x6E90;&#x9879;&#x76EE;&#x7684;&#x95EE;&#x9898;&#x8FFD;&#x8E2A;&#x7CFB;&#x7EDF;&#xFF08;&#x5982;GitHub Issues&#xFF09;&#xFF0C;&#x4F46;&#x5B58;&#x5728;&#x4EE5;&#x4E0B;&#x5C40;&#x9650;&#x6027;&#xFF1A;</p>
+<ul>
+<li><strong>&#x5916;&#x90E8;&#x6709;&#x6548;&#x6027;&#x5A01;&#x80C1;</strong>&#xFF1A;&#x4EC5;&#x8986;&#x76D6;&#x5F00;&#x6E90;&#x5E94;&#x7528;&#xFF0C;&#x65E0;&#x6CD5;&#x4EE3;&#x8868;&#x95ED;&#x6E90;&#x5546;&#x4E1A;&#x5E94;&#x7528;&#x3002;</li>
+<li><strong>&#x53EF;&#x6269;&#x5C55;&#x6027;&#x5DEE;</strong>&#xFF1A;&#x624B;&#x52A8;&#x9A8C;&#x8BC1;&#x4FEE;&#x590D;&#x6548;&#x7387;&#x4F4E;&#x3002;</li>
+<li><strong>&#x4FE1;&#x606F;&#x4E0D;&#x5168;</strong>&#xFF1A;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#x7F3A;&#x4E4F;&#x8BE6;&#x7EC6;&#x7684;&#x53D8;&#x66F4;&#x8BB0;&#x5F55;&#x548C;&#x590D;&#x73B0;&#x811A;&#x672C;&#x3002;</li>
+</ul>
+<h4 id="&#x6280;&#x672F;&#x65B9;&#x6848;&#xFF1A;CraftDroid&#x6846;&#x67B6;"><a href="#&#x6280;&#x672F;&#x65B9;&#x6848;&#xFF1A;CraftDroid&#x6846;&#x67B6;" class="headerlink" title="&#x6280;&#x672F;&#x65B9;&#x6848;&#xFF1A;CraftDroid&#x6846;&#x67B6;"></a><strong>&#x6280;&#x672F;&#x65B9;&#x6848;&#xFF1A;CraftDroid&#x6846;&#x67B6;</strong></h4><p><img src="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AMining-Android-crash-fixes-in-the-absence-of-issue-and-change-tracking-systems/1.png" alt></p>
+<p>CraftDroid&#x63D0;&#x51FA;&#x4E86;&#x4E00;&#x79CD;&#x81EA;&#x52A8;&#x5316;&#x6316;&#x6398;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x7684;&#x6D41;&#x7A0B;&#xFF0C;&#x65E0;&#x9700;&#x6E90;&#x4EE3;&#x7801;&#x6216;&#x95EE;&#x9898;&#x8FFD;&#x8E2A;&#x7CFB;&#x7EDF;&#xFF0C;&#x6838;&#x5FC3;&#x5206;&#x4E3A;&#x4E24;&#x9636;&#x6BB5;&#xFF1A;</p>
+<hr>
+<h3 id="Phase-I&#xFF1A;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6316;&#x6398;"><a href="#Phase-I&#xFF1A;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6316;&#x6398;" class="headerlink" title="Phase I&#xFF1A;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6316;&#x6398;"></a><strong>Phase I&#xFF1A;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6316;&#x6398;</strong></h3><h5 id="1-&#x5E94;&#x7528;&#x8C31;&#x7CFB;&#x6784;&#x5EFA;&#xFF08;App-Lineage-Construction&#xFF09;"><a href="#1-&#x5E94;&#x7528;&#x8C31;&#x7CFB;&#x6784;&#x5EFA;&#xFF08;App-Lineage-Construction&#xFF09;" class="headerlink" title="1. &#x5E94;&#x7528;&#x8C31;&#x7CFB;&#x6784;&#x5EFA;&#xFF08;App Lineage Construction&#xFF09;"></a><strong>1. &#x5E94;&#x7528;&#x8C31;&#x7CFB;&#x6784;&#x5EFA;&#xFF08;App Lineage Construction&#xFF09;</strong></h5><ul>
+<li><strong>&#x8F93;&#x5165;</strong>&#xFF1A;&#x4ECE;AndroZoo&#x4ED3;&#x5E93;&#x83B7;&#x53D6;450&#x4E07;APK&#xFF0C;&#x7B5B;&#x9009;&#x51FA;28,000&#x4E2A;&#x5E94;&#x7528;&#x8C31;&#x7CFB;&#xFF08;&#x6BCF;&#x4E2A;&#x8C31;&#x7CFB;&#x5305;&#x542B;&#x81F3;&#x5C11;10&#x4E2A;&#x7248;&#x672C;&#xFF09;&#x3002;</li>
+<li><strong>&#x65B9;&#x6CD5;</strong>&#xFF1A;<ul>
+<li>&#x901A;&#x8FC7;&#x5305;&#x540D;&#x8BC6;&#x522B;&#x540C;&#x4E00;&#x5E94;&#x7528;&#x7684;&#x4E0D;&#x540C;&#x7248;&#x672C;&#x3002;</li>
+<li>&#x6309;&#x53D1;&#x5E03;&#x65F6;&#x95F4;&#x6392;&#x5E8F;&#xFF0C;&#x5F62;&#x6210;&#x7248;&#x672C;&#x6F14;&#x5316;&#x94FE;&#x3002;</li>
+</ul>
+</li>
+<li><strong>&#x76EE;&#x7684;</strong>&#xFF1A;&#x8FFD;&#x8E2A;&#x540C;&#x4E00;&#x5E94;&#x7528;&#x7684;&#x7248;&#x672C;&#x53D8;&#x5316;&#xFF0C;&#x5B9A;&#x4F4D;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x7684;&#x76F8;&#x90BB;&#x7248;&#x672C;&#x3002;</li>
+</ul>
+<h5 id="2-&#x5D29;&#x6E83;&#x63A2;&#x7D22;&#xFF08;App-Crash-Exploration&#xFF09;"><a href="#2-&#x5D29;&#x6E83;&#x63A2;&#x7D22;&#xFF08;App-Crash-Exploration&#xFF09;" class="headerlink" title="2. &#x5D29;&#x6E83;&#x63A2;&#x7D22;&#xFF08;App Crash Exploration&#xFF09;"></a><strong>2. &#x5D29;&#x6E83;&#x63A2;&#x7D22;&#xFF08;App Crash Exploration&#xFF09;</strong></h5><ul>
+<li><strong>&#x6D4B;&#x8BD5;&#x7B56;&#x7565;</strong>&#xFF1A;<ul>
+<li><strong>Monkey</strong>&#xFF1A;Android&#x5185;&#x7F6E;&#x968F;&#x673A;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177;&#xFF0C;&#x901A;&#x8FC7;&#x56FA;&#x5B9A;&#x79CD;&#x5B50;&#x786E;&#x4FDD;&#x8F93;&#x5165;&#x53EF;&#x590D;&#x73B0;&#x3002;</li>
+<li><strong>DroidBot</strong>&#xFF1A;&#x6539;&#x8FDB;&#x652F;&#x6301;&#x8F93;&#x5165;&#x590D;&#x73B0;&#x7684;&#x8F7B;&#x91CF;&#x7EA7;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177;&#xFF0C;&#x91C7;&#x7528;DFS&#x548C;BFS&#x7B56;&#x7565;&#x63D0;&#x5347;&#x8986;&#x76D6;&#x7387;&#x3002;</li>
+</ul>
+</li>
+<li><strong>&#x73AF;&#x5883;&#x63A7;&#x5236;</strong>&#xFF1A;<ul>
+<li>&#x4F7F;&#x7528;&#x76F8;&#x540C;&#x7684;&#x6A21;&#x62DF;&#x5668;&#x955C;&#x50CF;&#xFF08;x86 ABI&#xFF09;&#xFF0C;&#x786E;&#x4FDD;&#x73AF;&#x5883;&#x4E00;&#x81F4;&#x6027;&#x3002;</li>
+<li>&#x6BCF;&#x6B21;&#x6D4B;&#x8BD5;&#x524D;&#x6E05;&#x9664;&#x7F13;&#x5B58;&#x548C;&#x4E34;&#x65F6;&#x6587;&#x4EF6;&#xFF0C;&#x907F;&#x514D;&#x6B8B;&#x7559;&#x72B6;&#x6001;&#x5E72;&#x6270;&#x3002;</li>
+</ul>
+</li>
+<li><strong>&#x8F93;&#x51FA;</strong>&#xFF1A;&#x901A;&#x8FC7;&#x65E5;&#x5FD7;&#x5206;&#x6790;&#xFF08;Logcat&#xFF09;&#x6355;&#x83B7;&#x5D29;&#x6E83;&#x5806;&#x6808;&#xFF0C;&#x8BB0;&#x5F55;&#x5D29;&#x6E83;&#x7C7B;&#x578B;&#x3001;&#x4FE1;&#x53F7;&#x65B9;&#x6CD5;&#xFF08;Signaler&#xFF09;&#x548C;&#x5D29;&#x6E83;&#x4F4D;&#x7F6E;&#xFF08;CrashLoc&#xFF09;&#x3002;</li>
+</ul>
+<h5 id="3-&#x4FEE;&#x590D;&#x9A8C;&#x8BC1;&#xFF08;App-Fix-Verification&#xFF09;"><a href="#3-&#x4FEE;&#x590D;&#x9A8C;&#x8BC1;&#xFF08;App-Fix-Verification&#xFF09;" class="headerlink" title="3. &#x4FEE;&#x590D;&#x9A8C;&#x8BC1;&#xFF08;App Fix Verification&#xFF09;"></a><strong>3. &#x4FEE;&#x590D;&#x9A8C;&#x8BC1;&#xFF08;App Fix Verification&#xFF09;</strong></h5><ul>
+<li><strong>&#x5D29;&#x6E83;-&#x4FEE;&#x590D;&#x5BF9;&#xFF08;Crashed-Fixed Pair&#xFF09;</strong>&#xFF1A;<ul>
+<li>&#x82E5;&#x7248;&#x672C;(a_1)&#x5728;&#x6D4B;&#x8BD5;&#x8F93;&#x5165;(t)&#x4E0B;&#x5D29;&#x6E83;&#xFF0C;&#x800C;&#x540E;&#x7EED;&#x7248;&#x672C;(a_2)&#x901A;&#x8FC7;&#x76F8;&#x540C;&#x6D4B;&#x8BD5;&#xFF0C;&#x5219;&#x8BA4;&#x4E3A;(a_2)&#x4FEE;&#x590D;&#x4E86;(a_1)&#x7684;&#x5D29;&#x6E83;&#x3002;</li>
+</ul>
+</li>
+<li><strong>&#x9759;&#x6001;&#x4EE3;&#x7801;&#x5206;&#x6790;</strong>&#xFF1A;<ul>
+<li>&#x4F7F;&#x7528;Soot&#x53CD;&#x7F16;&#x8BD1;APK&#xFF0C;&#x5BF9;&#x6BD4;&#x5D29;&#x6E83;&#x7248;&#x672C;&#x4E0E;&#x4FEE;&#x590D;&#x7248;&#x672C;&#x7684;&#x4EE3;&#x7801;&#x5DEE;&#x5F02;&#x3002;</li>
+<li><strong><em>&#x4EC5;&#x5173;&#x6CE8;&#x5806;&#x6808;&#x4E2D;&#x6D89;&#x53CA;&#x7684;&#x5E94;&#x7528;&#x65B9;&#x6CD5;&#xFF08;&#x975E;&#x6846;&#x67B6;&#x65B9;&#x6CD5;&#xFF09;&#xFF0C;&#x5B9A;&#x4F4D;&#x5177;&#x4F53;&#x4FEE;&#x590D;&#x4EE3;&#x7801;&#x3002;</em></strong></li>
+</ul>
+</li>
+<li><strong>&#x8FC7;&#x6EE4;&#x566A;&#x58F0;</strong>&#xFF1A;<ul>
+<li>&#x6392;&#x9664;API&#x8C03;&#x7528;&#x88AB;&#x79FB;&#x9664;&#x6216;&#x591A;&#x6B21;&#x51FA;&#x73B0;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x786E;&#x4FDD;&#x4FEE;&#x590D;&#x76F8;&#x5173;&#x3002;</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="Phase-II&#xFF1A;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;"><a href="#Phase-II&#xFF1A;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;" class="headerlink" title="Phase II&#xFF1A;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;"></a><strong>Phase II&#xFF1A;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;</strong></h3><h5 id="4-&#x4FEE;&#x590D;&#x5206;&#x7EC4;&#xFF08;Fix-Grouping&#xFF09;"><a href="#4-&#x4FEE;&#x590D;&#x5206;&#x7EC4;&#xFF08;Fix-Grouping&#xFF09;" class="headerlink" title="4. &#x4FEE;&#x590D;&#x5206;&#x7EC4;&#xFF08;Fix Grouping&#xFF09;"></a><strong>4. &#x4FEE;&#x590D;&#x5206;&#x7EC4;&#xFF08;Fix Grouping&#xFF09;</strong></h5><ul>
+<li><strong>&#x7279;&#x5F81;&#x63D0;&#x53D6;</strong>&#xFF1A;&#x4ECE;&#x5D29;&#x6E83;&#x5806;&#x6808;&#x4E2D;&#x63D0;&#x53D6;&#x4E09;&#x5143;&#x7EC4;&#xFF08;&#x5F02;&#x5E38;&#x7C7B;&#x578B;&#x3001;&#x4FE1;&#x53F7;&#x65B9;&#x6CD5;&#x3001;&#x5D29;&#x6E83;&#x4F4D;&#x7F6E;&#xFF09;&#x3002;</li>
+<li><strong>&#x5206;&#x7EC4;&#x7B56;&#x7565;</strong>&#xFF1A;&#x76F8;&#x540C;&#x7279;&#x5F81;&#x7684;&#x4E09;&#x5143;&#x7EC4;&#x5F52;&#x4E3A;&#x4E00;&#x7EC4;&#xFF0C;&#x5F62;&#x6210;35&#x4E2A;&#x4FEE;&#x590D;&#x5206;&#x7EC4;&#xFF08;Bucket&#xFF09;&#x3002;</li>
+</ul>
+<h5 id="5-&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;&#xFF08;Fix-Template-Abstraction&#xFF09;"><a href="#5-&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;&#xFF08;Fix-Template-Abstraction&#xFF09;" class="headerlink" title="5. &#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;&#xFF08;Fix Template Abstraction&#xFF09;"></a><strong>5. &#x4FEE;&#x590D;&#x6A21;&#x677F;&#x62BD;&#x8C61;&#xFF08;Fix Template Abstraction&#xFF09;</strong></h5><blockquote>
+<ol>
+<li><p>&#x6839;&#x636E;&#x5806;&#x6808;&#x8DDF;&#x8E2A;&#xFF0C;&#x6211;&#x4EEC;&#x4ECE;&#x7814;&#x7A76;&#x8C03;&#x7528;&#x5D29;&#x6E83;&#x7684;Android&#x6846;&#x67B6;API&#x7684;&#x5F00;&#x53D1;&#x8005;&#x65B9;&#x6CD5;&#x4E2D;&#x7684;&#x4EE3;&#x7801;&#x66F4;&#x6539;&#x5F00;&#x59CB;&#xFF0C;&#x5373;&#x5D29;&#x6E83;&#x4F4D;&#x7F6E;&#x3002;</p>
+</li>
+<li><p>&#x5982;&#x679C;&#x672A;&#x627E;&#x5230;&#x4FEE;&#x590D;&#x65B9;&#x6CD5;&#xFF0C;&#x6211;&#x4EEC;&#x8F6C;&#x5411;&#x5806;&#x6808;&#x8DDF;&#x8E2A;&#x5E95;&#x90E8;&#x7684;&#x4E0B;&#x4E00;&#x4E2A;&#x5F00;&#x53D1;&#x8005;&#x65B9;&#x6CD5;&#x3002;&#x6211;&#x4EEC;&#x91CD;&#x590D;&#x6B64;&#x8FC7;&#x7A0B;&#xFF0C;&#x76F4;&#x5230;&#x627E;&#x5230;&#x4FEE;&#x590D;&#x65B9;&#x6CD5;&#x6216;&#x5230;&#x8FBE;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x5F00;&#x53D1;&#x8005;&#x65B9;&#x6CD5;&#x3002;</p>
+</li>
+<li>&#x4E00;&#x65E6;&#x627E;&#x5230;&#x4FEE;&#x590D;&#x65B9;&#x6CD5;&#xFF0C;&#x6211;&#x4EEC;&#x8F6C;&#x5411;&#x5B98;&#x65B9;&#x7684;Android&#x5F00;&#x53D1;&#x6587;&#x6863;&#x4EE5;&#x53CA;&#x5728;&#x7EBF;&#x8BA8;&#x8BBA;&#x8BBA;&#x575B;&#x4EE5;&#x9A8C;&#x8BC1;&#x6211;&#x4EEC;&#x7684;&#x53D1;&#x73B0;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x5728;&#x7814;&#x7A76;&#x6240;&#x6709;&#x5F00;&#x53D1;&#x8005;&#x65B9;&#x6CD5;&#x540E;&#x672A;&#x9A8C;&#x8BC1;&#x51FA;&#x4FEE;&#x590D;&#x65B9;&#x6CD5;&#xFF0C;&#x6211;&#x4EEC;&#x5728;&#x6B64;&#x5DE5;&#x4F5C;&#x4E2D;&#x8BA4;&#x4E3A;&#x4EE3;&#x7801;&#x66F4;&#x6539;&#x65E0;&#x5173;&#x7D27;&#x8981;&#x3002;</li>
+</ol>
+</blockquote>
+<ul>
+<li><strong>&#x624B;&#x52A8;&#x5206;&#x6790;&#x534F;&#x8BAE;</strong>&#xFF1A;<ol>
+<li>&#x4ECE;&#x5D29;&#x6E83;&#x4F4D;&#x7F6E;&#x7684;&#x5E94;&#x7528;&#x65B9;&#x6CD5;&#x5F00;&#x59CB;&#xFF0C;&#x9010;&#x5C42;&#x68C0;&#x67E5;&#x4EE3;&#x7801;&#x53D8;&#x66F4;&#x3002;</li>
+<li>&#x7ED3;&#x5408;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x548C;&#x5F00;&#x53D1;&#x8005;&#x8BBA;&#x575B;&#x9A8C;&#x8BC1;&#x4FEE;&#x590D;&#x903B;&#x8F91;&#x3002;</li>
+</ol>
+</li>
+<li><strong>&#x6A21;&#x677F;&#x7C7B;&#x578B;</strong>&#xFF1A;<ul>
+<li><strong>&#x6743;&#x9650;&#x68C0;&#x67E5;</strong>&#xFF1A;&#x5982;<code>READ_PRECISE_PHONE_STATE</code>&#x7F3A;&#x5931;&#x65F6;&#x8C03;&#x6574;&#x53C2;&#x6570;&#x3002;</li>
+<li><strong>&#x751F;&#x547D;&#x5468;&#x671F;&#x9A8C;&#x8BC1;</strong>&#xFF1A;&#x5728;&#x663E;&#x793A;&#x5BF9;&#x8BDD;&#x6846;&#x524D;&#x68C0;&#x67E5;Activity&#x72B6;&#x6001;&#x3002;</li>
+<li><strong>&#x7EBF;&#x7A0B;&#x5904;&#x7406;</strong>&#xFF1A;&#x66FF;&#x6362;<code>stop()</code>&#x4E3A;<code>interrupt()</code>&#x907F;&#x514D;<code>UnsupportedOperationException</code>&#x3002;</li>
+<li><strong>&#x7A7A;&#x503C;&#x68C0;&#x67E5;</strong>&#xFF1A;&#x907F;&#x514D;<code>NullPointerException</code>&#x3002;</li>
+</ul>
+</li>
+<li><strong>&#x6700;&#x7EC8;&#x8F93;&#x51FA;</strong>&#xFF1A;17&#x79CD;&#x7EC6;&#x7C92;&#x5EA6;&#x7684;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#xFF08;&#x89C1;&#x8868;1&#xFF09;&#xFF0C;&#x8986;&#x76D6;&#x5E38;&#x89C1;API&#x8BEF;&#x7528;&#x573A;&#x666F;&#x3002;</li>
+</ul>
+<p><img src="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AMining-Android-crash-fixes-in-the-absence-of-issue-and-change-tracking-systems/2.png" alt></p>
+<hr>
+<h3 id="&#x5173;&#x952E;&#x6280;&#x672F;&#x70B9;"><a href="#&#x5173;&#x952E;&#x6280;&#x672F;&#x70B9;" class="headerlink" title="&#x5173;&#x952E;&#x6280;&#x672F;&#x70B9;"></a><strong>&#x5173;&#x952E;&#x6280;&#x672F;&#x70B9;</strong></h3><ol>
+<li><p><strong>&#x53EF;&#x590D;&#x73B0;&#x6D4B;&#x8BD5;&#x8F93;&#x5165;</strong>&#xFF1A;</p>
+<ul>
+<li>&#x6539;&#x8FDB;DroidBot&#x4EE5;&#x8BB0;&#x5F55;&#x4E8B;&#x4EF6;&#x5E8F;&#x5217;&#xFF0C;&#x786E;&#x4FDD;&#x8DE8;&#x7248;&#x672C;&#x6D4B;&#x8BD5;&#x4E00;&#x81F4;&#x6027;&#x3002;</li>
+<li>&#x901A;&#x8FC7;&#x56FA;&#x5B9A;&#x79CD;&#x5B50;&#x548C;&#x5E76;&#x884C;&#x5316;&#x6D4B;&#x8BD5;&#x63D0;&#x5347;&#x6548;&#x7387;&#x3002;</li>
+</ul>
+</li>
+<li><p><strong>&#x73AF;&#x5883;&#x4E00;&#x81F4;&#x6027;&#x63A7;&#x5236;</strong>&#xFF1A;</p>
+<ul>
+<li>&#x4F7F;&#x7528;&#x76F8;&#x540C;&#x6A21;&#x62DF;&#x5668;&#x955C;&#x50CF;&#x548C;ABI&#xFF0C;&#x51CF;&#x5C11;&#x8BBE;&#x5907;&#x788E;&#x7247;&#x5316;&#x5F71;&#x54CD;&#x3002;</li>
+<li>&#x6E05;&#x7406;&#x7F13;&#x5B58;&#x548C;&#x65E5;&#x5FD7;&#x7F13;&#x51B2;&#x533A;&#xFF0C;&#x6D88;&#x9664;&#x73AF;&#x5883;&#x6B8B;&#x7559;&#x5E72;&#x6270;&#x3002;</li>
+</ul>
+</li>
+<li><p><strong>&#x4FEE;&#x590D;&#x5B9A;&#x4F4D;&#x4E0E;&#x9A8C;&#x8BC1;</strong>&#xFF1A;</p>
+<ul>
+<li>&#x7ED3;&#x5408;&#x52A8;&#x6001;&#x6D4B;&#x8BD5;&#xFF08;&#x5D29;&#x6E83;&#x89E6;&#x53D1;&#xFF09;&#x4E0E;&#x9759;&#x6001;&#x5206;&#x6790;&#xFF08;&#x4EE3;&#x7801;&#x5DEE;&#x5F02;&#xFF09;&#xFF0C;&#x7CBE;&#x51C6;&#x5B9A;&#x4F4D;&#x4FEE;&#x590D;&#x4EE3;&#x7801;&#x3002;</li>
+<li>&#x901A;&#x8FC7;&#x624B;&#x52A8;&#x9A8C;&#x8BC1;&#x8FC7;&#x6EE4;&#x566A;&#x58F0;&#x53D8;&#x66F4;&#xFF0C;&#x786E;&#x4FDD;&#x4FEE;&#x590D;&#x6709;&#x6548;&#x6027;&#x3002;</li>
+</ul>
+</li>
+<li><p><strong>&#x6A21;&#x677F;&#x62BD;&#x8C61;&#x7B56;&#x7565;</strong>&#xFF1A;</p>
+<ul>
+<li>&#x57FA;&#x4E8E;&#x5D29;&#x6E83;&#x7279;&#x5F81;&#x5206;&#x7EC4;&#xFF0C;&#x63D0;&#x5347;&#x6A21;&#x677F;&#x7684;&#x9488;&#x5BF9;&#x6027;&#x3002;</li>
+<li>&#x624B;&#x52A8;&#x5206;&#x6790;&#x786E;&#x4FDD;&#x6A21;&#x677F;&#x7684;&#x901A;&#x7528;&#x6027;&#x548C;&#x53EF;&#x89E3;&#x91CA;&#x6027;&#x3002;</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="&#x5B9E;&#x9A8C;&#x4E0E;&#x8BC4;&#x4F30;"><a href="#&#x5B9E;&#x9A8C;&#x4E0E;&#x8BC4;&#x4F30;" class="headerlink" title="&#x5B9E;&#x9A8C;&#x4E0E;&#x8BC4;&#x4F30;"></a><strong>&#x5B9E;&#x9A8C;&#x4E0E;&#x8BC4;&#x4F30;</strong></h3><ul>
+<li><strong>&#x6570;&#x636E;&#x96C6;</strong>&#xFF1A;&#x4ECE;28,000&#x4E2A;&#x8C31;&#x7CFB;&#x4E2D;&#x7B5B;&#x9009;&#x51FA;104&#x4E2A;&#x6709;&#x6548;&#x4FEE;&#x590D;&#xFF0C;&#x6784;&#x5EFA;ReCBench&#x57FA;&#x51C6;&#xFF08;&#x542B;200&#x4E2A;&#x53EF;&#x590D;&#x73B0;&#x5D29;&#x6E83;&#xFF09;&#x3002;</li>
+<li><strong>&#x8BC4;&#x4F30;&#x7ED3;&#x679C;</strong>&#xFF1A;<ul>
+<li><strong>RQ1</strong>&#xFF1A;CraftDroid&#x8986;&#x76D6;&#x4E86;&#x5F00;&#x6E90;&#x6570;&#x636E;&#x96C6;&#x4E2D;9&#x4E2A;&#x5171;&#x4EAB;Bucket&#xFF0C;&#x5E76;&#x53D1;&#x73B0;26&#x4E2A;&#x65B0;Bucket&#x3002;</li>
+<li><strong>RQ2</strong>&#xFF1A;ReCBench&#x5728;&#x53EF;&#x590D;&#x73B0;&#x6027;&#x3001;&#x89C4;&#x6A21;&#x548C;&#x591A;&#x6837;&#x6027;&#x4E0A;&#x4F18;&#x4E8E;&#x73B0;&#x6709;&#x57FA;&#x51C6;&#xFF08;&#x5982;DrotxBench&#xFF09;&#x3002;</li>
+<li><strong>RQ3</strong>&#xFF1A;17&#x4E2A;&#x6A21;&#x677F;&#x6210;&#x529F;&#x4FEE;&#x590D;85%&#x7684;&#x6D4B;&#x8BD5;&#x6848;&#x4F8B;&#xFF08;17/20&#xFF09;&#xFF0C;&#x90E8;&#x5206;&#x5931;&#x8D25;&#x6848;&#x4F8B;&#x56E0;&#x4EE3;&#x7801;&#x590D;&#x6742;&#x6027;&#x6216;&#x5DE5;&#x5177;&#x9650;&#x5236;&#x3002;</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="&#x5C40;&#x9650;&#x6027;&#x4E0E;&#x672A;&#x6765;&#x5DE5;&#x4F5C;"><a href="#&#x5C40;&#x9650;&#x6027;&#x4E0E;&#x672A;&#x6765;&#x5DE5;&#x4F5C;" class="headerlink" title="&#x5C40;&#x9650;&#x6027;&#x4E0E;&#x672A;&#x6765;&#x5DE5;&#x4F5C;"></a><strong>&#x5C40;&#x9650;&#x6027;&#x4E0E;&#x672A;&#x6765;&#x5DE5;&#x4F5C;</strong></h3><ul>
+<li><strong>&#x5916;&#x90E8;&#x6709;&#x6548;&#x6027;</strong>&#xFF1A;&#x4F9D;&#x8D56;AndroZoo&#x6570;&#x636E;&#x96C6;&#xFF0C;&#x53EF;&#x80FD;&#x9057;&#x6F0F;&#x7279;&#x5B9A;&#x7C7B;&#x578B;&#x5E94;&#x7528;&#x3002;</li>
+<li><strong>&#x4FEE;&#x590D;&#x8986;&#x76D6;&#x7387;</strong>&#xFF1A;&#x4EC5;&#x5173;&#x6CE8;&#x5806;&#x6808;&#x4E2D;&#x5E94;&#x7528;&#x65B9;&#x6CD5;&#xFF0C;&#x53EF;&#x80FD;&#x5FFD;&#x7565;&#x6DF1;&#x5C42;&#x4EE3;&#x7801;&#x95EE;&#x9898;&#x3002;</li>
+<li><strong>&#x81EA;&#x52A8;&#x5316;&#x63D0;&#x5347;</strong>&#xFF1A;&#x672A;&#x6765;&#x8BA1;&#x5212;&#x96C6;&#x6210;&#x66F4;&#x591A;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177;&#xFF08;&#x5982;CRASHSCOPE&#xFF09;&#xFF0C;&#x5E76;&#x63A2;&#x7D22;&#x81EA;&#x52A8;&#x6A21;&#x677F;&#x751F;&#x6210;&#x3002;</li>
+</ul>
+<p>CraftDroid&#x4E3A;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#x7684;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6316;&#x6398;&#x63D0;&#x4F9B;&#x4E86;&#x65B0;&#x601D;&#x8DEF;&#xFF0C;&#x5176;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#x548C;&#x57FA;&#x51C6;&#x96C6;&#xFF08;ReCBench&#xFF09;&#x4E3A;&#x81EA;&#x52A8;&#x5316;&#x7A0B;&#x5E8F;&#x4FEE;&#x590D;&#xFF08;APR&#xFF09;&#x793E;&#x533A;&#x63D0;&#x4F9B;&#x4E86;&#x91CD;&#x8981;&#x8D44;&#x6E90;&#x3002;</p>
+<h2 id="&#x76F8;&#x5173;&#x5DE5;&#x4F5C;"><a href="#&#x76F8;&#x5173;&#x5DE5;&#x4F5C;" class="headerlink" title="&#x76F8;&#x5173;&#x5DE5;&#x4F5C;"></a>&#x76F8;&#x5173;&#x5DE5;&#x4F5C;</h2><p>&#x672C;&#x6587;&#x5728;&#x7B2C;7&#x8282;&#x201C;Related Work&#x201D;&#x4E2D;&#x7CFB;&#x7EDF;&#x68B3;&#x7406;&#x4E86;&#x4E0E;Android&#x5E94;&#x7528;&#x5D29;&#x6E83;&#x5206;&#x6790;&#x548C;&#x4FEE;&#x590D;&#x76F8;&#x5173;&#x7684;&#x7814;&#x7A76;&#xFF0C;&#x4E3B;&#x8981;&#x6DB5;&#x76D6;&#x4EE5;&#x4E0B;&#x51E0;&#x4E2A;&#x65B9;&#x5411;&#xFF1A;</p>
+<hr>
+<h4 id="1-Android&#x5D29;&#x6E83;&#x5206;&#x6790;&#xFF08;Android-Crash-Analysis&#xFF09;"><a href="#1-Android&#x5D29;&#x6E83;&#x5206;&#x6790;&#xFF08;Android-Crash-Analysis&#xFF09;" class="headerlink" title="1. Android&#x5D29;&#x6E83;&#x5206;&#x6790;&#xFF08;Android Crash Analysis&#xFF09;"></a><strong>1. Android&#x5D29;&#x6E83;&#x5206;&#x6790;&#xFF08;Android Crash Analysis&#xFF09;</strong></h4><ul>
+<li><strong>Tan&#x7B49;&#x4EBA;&#xFF08;2018&#xFF09;</strong>&#xFF1A;<br>&#x63D0;&#x51FA;<strong>DrotxBench</strong>&#x57FA;&#x51C6;&#xFF0C;&#x5305;&#x542B;24&#x4E2A;&#x53EF;&#x590D;&#x73B0;&#x7684;Android&#x5E94;&#x7528;&#x5D29;&#x6E83;&#x6848;&#x4F8B;&#x53CA;&#x4FEE;&#x590D;&#x3002;&#x4F46;&#x8BE5;&#x57FA;&#x51C6;&#x89C4;&#x6A21;&#x8F83;&#x5C0F;&#xFF0C;&#x4E14;&#x534A;&#x6570;&#x5D29;&#x6E83;&#x4E3A;<code>NullPointerException</code>&#xFF0C;&#x8986;&#x76D6;&#x573A;&#x666F;&#x6709;&#x9650;&#x3002;&#x6B64;&#x5916;&#xFF0C;&#x4EC5;9&#x4E2A;&#x5D29;&#x6E83;&#x5C5E;&#x4E8E;&#x6846;&#x67B6;API&#x8BEF;&#x7528;&#xFF08;&#x5373;&#x672C;&#x6587;&#x5173;&#x6CE8;&#x7684;&#x201C;&#x6846;&#x67B6;&#x7279;&#x5B9A;&#x5D29;&#x6E83;&#x201D;&#xFF09;&#xFF0C;&#x4FEE;&#x590D;&#x7387;&#x8F83;&#x4F4E;&#xFF08;33%&#xFF09;&#x3002;</li>
+<li><strong>Fan&#x7B49;&#x4EBA;&#xFF08;2017&#xFF09;</strong>&#xFF1A;<br>&#x901A;&#x8FC7;&#x6316;&#x6398;&#x5F00;&#x6E90;&#x9879;&#x76EE;&#xFF08;&#x5982;F-Droid&#xFF09;&#x7684;&#x95EE;&#x9898;&#x8FFD;&#x8E2A;&#x7CFB;&#x7EDF;&#xFF0C;&#x6536;&#x96C6;194&#x4E2A;&#x5D29;&#x6E83;&#x62A5;&#x544A;&#x53CA;&#x4FEE;&#x590D;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x8BE5;&#x65B9;&#x6CD5;&#x4F9D;&#x8D56;&#x4EBA;&#x5DE5;&#x6807;&#x6CE8;&#x548C;&#x5F00;&#x6E90;&#x6570;&#x636E;&#xFF0C;&#x65E0;&#x6CD5;&#x5904;&#x7406;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#xFF0C;&#x4E14;&#x7F3A;&#x4E4F;&#x590D;&#x73B0;&#x811A;&#x672C;&#xFF0C;&#x9650;&#x5236;&#x4E86;&#x5176;&#x5B9E;&#x9645;&#x5E94;&#x7528;&#x4EF7;&#x503C;&#x3002;</li>
+<li><strong>Moran&#x7B49;&#x4EBA;&#xFF08;2016&#xFF09;</strong>&#xFF1A;<br>&#x5F00;&#x53D1;<strong>CRASHSCOPE</strong>&#x5DE5;&#x5177;&#xFF0C;&#x81EA;&#x52A8;&#x5316;&#x53D1;&#x73B0;&#x5D29;&#x6E83;&#x5E76;&#x751F;&#x6210;&#x62A5;&#x544A;&#xFF0C;&#x4F46;&#x4EC5;&#x516C;&#x5F00;8&#x4E2A;&#x5D29;&#x6E83;&#x6848;&#x4F8B;&#xFF0C;&#x89C4;&#x6A21;&#x4E0D;&#x8DB3;&#x3002;</li>
+</ul>
+<p><strong>&#x672C;&#x6587;&#x5BF9;&#x6BD4;</strong>&#xFF1A;<br>CraftDroid&#x63D0;&#x51FA;<strong>ReCBench</strong>&#x57FA;&#x51C6;&#xFF0C;&#x5305;&#x542B;200&#x4E2A;&#x53EF;&#x590D;&#x73B0;&#x7684;&#x6846;&#x67B6;&#x7279;&#x5B9A;&#x5D29;&#x6E83;&#xFF0C;&#x8986;&#x76D6;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#xFF0C;&#x4E14;&#x63D0;&#x4F9B;&#x81EA;&#x52A8;&#x5316;&#x6D4B;&#x8BD5;&#x811A;&#x672C;&#xFF0C;&#x5F25;&#x8865;&#x4E86;&#x73B0;&#x6709;&#x57FA;&#x51C6;&#x7684;&#x4E0D;&#x8DB3;&#x3002;</p>
+<hr>
+<h4 id="2-Android&#x5E94;&#x7528;&#x6D4B;&#x8BD5;&#x4E0E;&#x8C03;&#x8BD5;&#xFF08;Android-App-Testing-and-Analysis&#xFF09;"><a href="#2-Android&#x5E94;&#x7528;&#x6D4B;&#x8BD5;&#x4E0E;&#x8C03;&#x8BD5;&#xFF08;Android-App-Testing-and-Analysis&#xFF09;" class="headerlink" title="2. Android&#x5E94;&#x7528;&#x6D4B;&#x8BD5;&#x4E0E;&#x8C03;&#x8BD5;&#xFF08;Android App Testing and Analysis&#xFF09;"></a><strong>2. Android&#x5E94;&#x7528;&#x6D4B;&#x8BD5;&#x4E0E;&#x8C03;&#x8BD5;&#xFF08;Android App Testing and Analysis&#xFF09;</strong></h4><ul>
+<li><strong>&#x81EA;&#x52A8;&#x5316;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177;</strong>&#xFF1A;  <ul>
+<li><strong>Monkey</strong>&#xFF08;Google&#x5B98;&#x65B9;&#x5DE5;&#x5177;&#xFF09;&#xFF1A;&#x751F;&#x6210;&#x968F;&#x673A;&#x8F93;&#x5165;&#xFF0C;&#x4F46;&#x8986;&#x76D6;&#x7387;&#x6709;&#x9650;&#x3002;  </li>
+<li><strong>DroidBot</strong>&#xFF08;Li&#x7B49;&#x4EBA;&#xFF0C;2017&#xFF09;&#xFF1A;&#x57FA;&#x4E8E;UI&#x5E03;&#x5C40;&#x5206;&#x6790;&#x7684;&#x8F7B;&#x91CF;&#x7EA7;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177;&#xFF0C;&#x652F;&#x6301;DFS/BFS&#x7B56;&#x7565;&#xFF0C;&#x672C;&#x6587;&#x6539;&#x8FDB;&#x5176;&#x590D;&#x73B0;&#x80FD;&#x529B;&#x3002;  </li>
+<li><strong>Sapienz</strong>&#xFF08;Mao&#x7B49;&#x4EBA;&#xFF0C;2016&#xFF09;&#xFF1A;&#x7ED3;&#x5408;&#x6A21;&#x7CCA;&#x6D4B;&#x8BD5;&#x4E0E;&#x591A;&#x76EE;&#x6807;&#x4F18;&#x5316;&#xFF0C;&#x5728;Top 1000&#x5E94;&#x7528;&#x4E2D;&#x68C0;&#x6D4B;558&#x4E2A;&#x672A;&#x77E5;&#x5D29;&#x6E83;&#x3002;  </li>
+</ul>
+</li>
+<li><strong>&#x9759;&#x6001;&#x5206;&#x6790;&#x5DE5;&#x5177;</strong>&#xFF1A;  <ul>
+<li><strong>FlowDroid</strong>&#xFF08;Arzt&#x7B49;&#x4EBA;&#xFF0C;2014&#xFF09;&#xFF1A;&#x901A;&#x8FC7;&#x6C61;&#x70B9;&#x5206;&#x6790;&#x68C0;&#x6D4B;&#x9690;&#x79C1;&#x6CC4;&#x9732;&#xFF0C;&#x4F46;&#x672A;&#x76F4;&#x63A5;&#x9488;&#x5BF9;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x3002;  </li>
+<li><strong>SimiDroid</strong>&#xFF08;Li&#x7B49;&#x4EBA;&#xFF0C;2017&#xFF09;&#xFF1A;&#x57FA;&#x4E8E;&#x4EE3;&#x7801;&#x76F8;&#x4F3C;&#x6027;&#x68C0;&#x6D4B;&#x5E94;&#x7528;&#x514B;&#x9686;&#xFF0C;&#x95F4;&#x63A5;&#x652F;&#x6301;&#x7248;&#x672C;&#x5DEE;&#x5F02;&#x5206;&#x6790;&#x3002;</li>
+</ul>
+</li>
+</ul>
+<p><strong>&#x672C;&#x6587;&#x5BF9;&#x6BD4;</strong>&#xFF1A;<br>CraftDroid&#x7EFC;&#x5408;&#x52A8;&#x6001;&#x6D4B;&#x8BD5;&#xFF08;&#x89E6;&#x53D1;&#x5D29;&#x6E83;&#xFF09;&#x4E0E;&#x9759;&#x6001;&#x5206;&#x6790;&#xFF08;&#x4EE3;&#x7801;&#x5DEE;&#x5F02;&#x5B9A;&#x4F4D;&#xFF09;&#xFF0C;&#x5F62;&#x6210;&#x7AEF;&#x5230;&#x7AEF;&#x4FEE;&#x590D;&#x6316;&#x6398;&#x6D41;&#x7A0B;&#xFF0C;&#x7A81;&#x7834;&#x4E86;&#x5355;&#x4E00;&#x65B9;&#x6CD5;&#x7684;&#x5C40;&#x9650;&#x6027;&#x3002;</p>
+<hr>
+<h4 id="3-Android&#x517C;&#x5BB9;&#x6027;&#x4E0E;&#x788E;&#x7247;&#x5316;&#x7814;&#x7A76;&#xFF08;Android-Compatibility-and-Fragmentation&#xFF09;"><a href="#3-Android&#x517C;&#x5BB9;&#x6027;&#x4E0E;&#x788E;&#x7247;&#x5316;&#x7814;&#x7A76;&#xFF08;Android-Compatibility-and-Fragmentation&#xFF09;" class="headerlink" title="3. Android&#x517C;&#x5BB9;&#x6027;&#x4E0E;&#x788E;&#x7247;&#x5316;&#x7814;&#x7A76;&#xFF08;Android Compatibility and Fragmentation&#xFF09;"></a><strong>3. Android&#x517C;&#x5BB9;&#x6027;&#x4E0E;&#x788E;&#x7247;&#x5316;&#x7814;&#x7A76;&#xFF08;Android Compatibility and Fragmentation&#xFF09;</strong></h4><ul>
+<li><strong>Wei&#x7B49;&#x4EBA;&#xFF08;2016&#xFF09;</strong>&#xFF1A;<br>&#x7814;&#x7A76;Android&#x788E;&#x7247;&#x5316;&#x5BFC;&#x81F4;&#x7684;&#x517C;&#x5BB9;&#x6027;&#x95EE;&#x9898;&#xFF0C;&#x53D1;&#x73B0;&#x5D29;&#x6E83;&#x662F;&#x4E3B;&#x8981;&#x8868;&#x73B0;&#x4E4B;&#x4E00;&#x3002;  </li>
+<li><strong>Li&#x7B49;&#x4EBA;&#xFF08;2018&#xFF09;</strong>&#xFF1A;<br>&#x63D0;&#x51FA;<strong>CID</strong>&#x5DE5;&#x5177;&#xFF0C;&#x81EA;&#x52A8;&#x5316;&#x68C0;&#x6D4B;API&#x517C;&#x5BB9;&#x6027;&#x95EE;&#x9898;&#xFF0C;&#x4F46;&#x672A;&#x76F4;&#x63A5;&#x5173;&#x8054;&#x4FEE;&#x590D;&#x6A21;&#x5F0F;&#x3002;</li>
+</ul>
+<p><strong>&#x672C;&#x6587;&#x5173;&#x8054;</strong>&#xFF1A;<br>CraftDroid&#x6316;&#x6398;&#x7684;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x6A21;&#x677F;&#xFF08;&#x5982;&#x6743;&#x9650;&#x68C0;&#x67E5;&#x3001;&#x751F;&#x547D;&#x5468;&#x671F;&#x9A8C;&#x8BC1;&#xFF09;&#x53EF;&#x89C6;&#x4E3A;&#x517C;&#x5BB9;&#x6027;&#x95EE;&#x9898;&#x7684;&#x4E00;&#x79CD;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#x3002;</p>
+<hr>
+<h4 id="4-&#x81EA;&#x52A8;&#x5316;&#x7A0B;&#x5E8F;&#x4FEE;&#x590D;&#xFF08;Automated-Program-Repair-APR&#xFF09;"><a href="#4-&#x81EA;&#x52A8;&#x5316;&#x7A0B;&#x5E8F;&#x4FEE;&#x590D;&#xFF08;Automated-Program-Repair-APR&#xFF09;" class="headerlink" title="4. &#x81EA;&#x52A8;&#x5316;&#x7A0B;&#x5E8F;&#x4FEE;&#x590D;&#xFF08;Automated Program Repair, APR&#xFF09;"></a><strong>4. &#x81EA;&#x52A8;&#x5316;&#x7A0B;&#x5E8F;&#x4FEE;&#x590D;&#xFF08;Automated Program Repair, APR&#xFF09;</strong></h4><ul>
+<li><strong>FixMiner</strong>&#xFF08;Koyuncu&#x7B49;&#x4EBA;&#xFF0C;2018&#xFF09;&#xFF1A;<br>&#x4ECE;&#x4EE3;&#x7801;&#x53D8;&#x66F4;&#x4E2D;&#x6316;&#x6398;&#x4FEE;&#x590D;&#x6A21;&#x5F0F;&#xFF0C;&#x4F46;&#x4F9D;&#x8D56;Git&#x63D0;&#x4EA4;&#x8BB0;&#x5F55;&#xFF0C;&#x65E0;&#x6CD5;&#x5904;&#x7406;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#x3002;  </li>
+<li><strong>AVATAR</strong>&#xFF08;Liu&#x7B49;&#x4EBA;&#xFF0C;2019&#xFF09;&#xFF1A;<br>&#x57FA;&#x4E8E;&#x9759;&#x6001;&#x5206;&#x6790;&#x8FDD;&#x89C4;&#x6A21;&#x5F0F;&#x751F;&#x6210;&#x4FEE;&#x590D;&#xFF0C;&#x9700;&#x7ED3;&#x5408;&#x7279;&#x5B9A;&#x89C4;&#x5219;&#x5E93;&#x3002;  </li>
+<li><strong>TBar</strong>&#xFF08;Liu&#x7B49;&#x4EBA;&#xFF0C;2019&#xFF09;&#xFF1A;<br>&#x5229;&#x7528;&#x9884;&#x5B9A;&#x4E49;&#x4EE3;&#x7801;&#x6A21;&#x677F;&#x751F;&#x6210;&#x8865;&#x4E01;&#xFF0C;&#x4F46;&#x6A21;&#x677F;&#x8986;&#x76D6;&#x573A;&#x666F;&#x6709;&#x9650;&#x3002;</li>
+</ul>
+<p><strong>&#x672C;&#x6587;&#x8D21;&#x732E;</strong>&#xFF1A;<br>CraftDroid&#x63D0;&#x4F9B;&#x7684;<strong>17&#x4E2A;&#x4FEE;&#x590D;&#x6A21;&#x677F;</strong>&#xFF08;&#x5982;<code>Provider Checker</code>&#x3001;<code>Activity Resolver</code>&#xFF09;&#x53EF;&#x76F4;&#x63A5;&#x96C6;&#x6210;&#x81F3;APR&#x5DE5;&#x5177;&#xFF0C;&#x6269;&#x5C55;&#x5176;&#x4FEE;&#x590D;&#x80FD;&#x529B;&#xFF0C;&#x5C24;&#x5176;&#x5728;&#x95ED;&#x6E90;&#x573A;&#x666F;&#x4E0B;&#x3002;</p>
+<hr>
+<h4 id="5-&#x5D29;&#x6E83;&#x590D;&#x73B0;&#x6280;&#x672F;&#xFF08;Crash-Reproduction&#xFF09;"><a href="#5-&#x5D29;&#x6E83;&#x590D;&#x73B0;&#x6280;&#x672F;&#xFF08;Crash-Reproduction&#xFF09;" class="headerlink" title="5. &#x5D29;&#x6E83;&#x590D;&#x73B0;&#x6280;&#x672F;&#xFF08;Crash Reproduction&#xFF09;"></a><strong>5. &#x5D29;&#x6E83;&#x590D;&#x73B0;&#x6280;&#x672F;&#xFF08;Crash Reproduction&#xFF09;</strong></h4><ul>
+<li><strong>Xuan&#x7B49;&#x4EBA;&#xFF08;2015&#xFF09;</strong>&#xFF1A;<br>&#x901A;&#x8FC7;&#x6D4B;&#x8BD5;&#x7528;&#x4F8B;&#x7A81;&#x53D8;&#x590D;&#x73B0;&#x5D29;&#x6E83;&#xFF0C;&#x4F46;&#x4F9D;&#x8D56;&#x73B0;&#x6709;&#x6D4B;&#x8BD5;&#x7528;&#x4F8B;&#x3002;  </li>
+<li><strong>Soltani&#x7B49;&#x4EBA;&#xFF08;2017&#xFF09;</strong>&#xFF1A;<br>&#x4F7F;&#x7528;&#x9057;&#x4F20;&#x7B97;&#x6CD5;&#x751F;&#x6210;&#x8F93;&#x5165;&#x4EE5;&#x590D;&#x73B0;&#x5D29;&#x6E83;&#xFF0C;&#x8BA1;&#x7B97;&#x6210;&#x672C;&#x8F83;&#x9AD8;&#x3002;</li>
+</ul>
+<p><strong>&#x672C;&#x6587;&#x521B;&#x65B0;</strong>&#xFF1A;<br>&#x901A;&#x8FC7;<strong>&#x7248;&#x672C;&#x6F14;&#x5316;&#x5206;&#x6790;</strong>&#x4E0E;<strong>&#x76F8;&#x540C;&#x8F93;&#x5165;&#x590D;&#x73B0;</strong>&#xFF0C;CraftDroid&#x65E0;&#x9700;&#x989D;&#x5916;&#x8F93;&#x5165;&#x751F;&#x6210;&#xFF0C;&#x76F4;&#x63A5;&#x5B9A;&#x4F4D;&#x4FEE;&#x590D;&#x7248;&#x672C;&#xFF0C;&#x6548;&#x7387;&#x663E;&#x8457;&#x63D0;&#x5347;&#x3002;</p>
+<hr>
+<h3 id="&#x603B;&#x7ED3;&#xFF1A;&#x672C;&#x6587;&#x4E0E;&#x73B0;&#x6709;&#x5DE5;&#x4F5C;&#x7684;&#x6838;&#x5FC3;&#x5DEE;&#x5F02;"><a href="#&#x603B;&#x7ED3;&#xFF1A;&#x672C;&#x6587;&#x4E0E;&#x73B0;&#x6709;&#x5DE5;&#x4F5C;&#x7684;&#x6838;&#x5FC3;&#x5DEE;&#x5F02;" class="headerlink" title="&#x603B;&#x7ED3;&#xFF1A;&#x672C;&#x6587;&#x4E0E;&#x73B0;&#x6709;&#x5DE5;&#x4F5C;&#x7684;&#x6838;&#x5FC3;&#x5DEE;&#x5F02;"></a><strong>&#x603B;&#x7ED3;&#xFF1A;&#x672C;&#x6587;&#x4E0E;&#x73B0;&#x6709;&#x5DE5;&#x4F5C;&#x7684;&#x6838;&#x5FC3;&#x5DEE;&#x5F02;</strong></h3><ol>
+<li><strong>&#x6570;&#x636E;&#x6765;&#x6E90;</strong>&#xFF1A;<br>&#x9996;&#x6B21;&#x9488;&#x5BF9;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#xFF0C;&#x901A;&#x8FC7;&#x5E02;&#x573A;&#x7248;&#x672C;&#x6F14;&#x5316;&#xFF08;&#x975E;&#x5F00;&#x6E90;&#x4ED3;&#x5E93;&#xFF09;&#x6316;&#x6398;&#x4FEE;&#x590D;&#x3002;  </li>
+<li><strong>&#x65B9;&#x6CD5;&#x521B;&#x65B0;</strong>&#xFF1A;<br>&#x7ED3;&#x5408;&#x53EF;&#x590D;&#x73B0;&#x6D4B;&#x8BD5;&#x3001;&#x7248;&#x672C;&#x5DEE;&#x5F02;&#x5206;&#x6790;&#x4E0E;&#x624B;&#x52A8;&#x6A21;&#x677F;&#x62BD;&#x8C61;&#xFF0C;&#x5F62;&#x6210;&#x95ED;&#x73AF;&#x6D41;&#x7A0B;&#x3002;  </li>
+<li><strong>&#x8D21;&#x732E;&#x8F93;&#x51FA;</strong>&#xFF1A;<br>&#x63D0;&#x4F9B;<strong>ReCBench&#x57FA;&#x51C6;</strong>&#x4E0E;<strong>17&#x4E2A;&#x4FEE;&#x590D;&#x6A21;&#x677F;</strong>&#xFF0C;&#x63A8;&#x52A8;APR&#x793E;&#x533A;&#x5728;Android&#x573A;&#x666F;&#x7684;&#x7814;&#x7A76;&#x3002;  </li>
+</ol>
+<p>&#x8FD9;&#x4E9B;&#x5DE5;&#x4F5C;&#x4E3A;&#x95ED;&#x6E90;&#x5E94;&#x7528;&#x7684;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x63D0;&#x4F9B;&#x4E86;&#x65B0;&#x7684;&#x65B9;&#x6CD5;&#x8BBA;&#x548C;&#x6570;&#x636E;&#x96C6;&#xFF0C;&#x586B;&#x8865;&#x4E86;&#x4F20;&#x7EDF;&#x4F9D;&#x8D56;&#x5F00;&#x6E90;&#x6570;&#x636E;&#x7684;&#x5C40;&#x9650;&#x6027;&#x3002;</p>
+<h2 id="&#x4FEE;&#x590D;&#x6A21;&#x677F;"><a href="#&#x4FEE;&#x590D;&#x6A21;&#x677F;" class="headerlink" title="&#x4FEE;&#x590D;&#x6A21;&#x677F;"></a>&#x4FEE;&#x590D;&#x6A21;&#x677F;</h2><p>&#x6839;&#x636E;&#x8BBA;&#x6587;&#x5185;&#x5BB9;&#xFF0C;CraftDroid &#x63D0;&#x4F9B;&#x7684;&#x662F;<strong>&#x4FEE;&#x6539;&#x6A21;&#x677F;</strong>&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x76F4;&#x63A5;&#x7ED9;&#x51FA;&#x5177;&#x4F53;&#x7684;&#x4FEE;&#x6539;&#x4EE3;&#x7801;&#x3002;&#x8FD9;&#x4E9B;&#x6A21;&#x677F;&#x662F;&#x57FA;&#x4E8E;&#x4ECE;&#x771F;&#x5B9E;&#x5E94;&#x7528;&#x4E2D;&#x6316;&#x6398;&#x7684;&#x4FEE;&#x590D;&#x6A21;&#x5F0F;&#x603B;&#x7ED3;&#x51FA;&#x6765;&#x7684;&#xFF0C;&#x5F00;&#x53D1;&#x8005;&#x9700;&#x8981;&#x6839;&#x636E;&#x5177;&#x4F53;&#x7684;&#x5D29;&#x6E83;&#x60C5;&#x51B5;&#x624B;&#x52A8;&#x5E94;&#x7528;&#x8FD9;&#x4E9B;&#x6A21;&#x677F;&#x6765;&#x4FEE;&#x590D;&#x95EE;&#x9898;&#x3002;</p>
+<h3 id="&#x5177;&#x4F53;&#x8BF4;&#x660E;"><a href="#&#x5177;&#x4F53;&#x8BF4;&#x660E;" class="headerlink" title="&#x5177;&#x4F53;&#x8BF4;&#x660E;"></a>&#x5177;&#x4F53;&#x8BF4;&#x660E;</h3><ol>
+<li><p><strong>&#x4FEE;&#x6539;&#x6A21;&#x677F;&#x7684;&#x4F5C;&#x7528;</strong>&#xFF1A;</p>
+<ul>
+<li>CraftDroid &#x63D0;&#x4F9B;&#x7684;&#x4FEE;&#x6539;&#x6A21;&#x677F;&#x662F;<strong>&#x7EC6;&#x7C92;&#x5EA6;&#x7684;&#x4FEE;&#x590D;&#x6A21;&#x5F0F;</strong>&#xFF0C;&#x65E8;&#x5728;&#x89E3;&#x51B3;&#x7279;&#x5B9A;&#x6846;&#x67B6; API &#x7684;&#x8BEF;&#x7528;&#x5BFC;&#x81F4;&#x7684;&#x5D29;&#x6E83;&#x95EE;&#x9898;&#x3002;&#x8FD9;&#x4E9B;&#x6A21;&#x677F;&#x662F;&#x901A;&#x8FC7;&#x5BF9;&#x5927;&#x91CF;&#x5D29;&#x6E83;&#x4FEE;&#x590D;&#x7684;&#x5206;&#x6790;&#x548C;&#x62BD;&#x8C61;&#x5F97;&#x5230;&#x7684;&#xFF0C;&#x76EE;&#x7684;&#x662F;&#x4E3A;&#x5F00;&#x53D1;&#x8005;&#x63D0;&#x4F9B;&#x4FEE;&#x590D;&#x5D29;&#x6E83;&#x7684;&#x6307;&#x5BFC;&#x3002;</li>
+<li>&#x4F8B;&#x5982;&#xFF0C;&#x5BF9;&#x4E8E; <code>WindowManager$BadTokenException</code> &#x5F02;&#x5E38;&#xFF0C;CraftDroid &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E2A;&#x540D;&#x4E3A; <strong>Lifecycle Verifier</strong> &#x7684;&#x6A21;&#x677F;&#xFF0C;&#x5EFA;&#x8BAE;&#x5728;&#x8C03;&#x7528; <code>show()</code> &#x65B9;&#x6CD5;&#x4E4B;&#x524D;&#x68C0;&#x67E5;&#x6D3B;&#x52A8;&#x7684;&#x751F;&#x547D;&#x5468;&#x671F;&#xFF0C;&#x786E;&#x4FDD;&#x6D3B;&#x52A8;&#x6CA1;&#x6709;&#x5904;&#x4E8E;&#x9500;&#x6BC1;&#x72B6;&#x6001;&#x3002;</li>
+</ul>
+</li>
+<li><p><strong>&#x624B;&#x52A8;&#x5E94;&#x7528;&#x6A21;&#x677F;</strong>&#xFF1A;</p>
+<ul>
+<li><p>&#x5F00;&#x53D1;&#x8005;&#x9700;&#x8981;&#x6839;&#x636E;&#x5177;&#x4F53;&#x7684;&#x5D29;&#x6E83;&#x65E5;&#x5FD7;&#x548C;&#x5E94;&#x7528;&#x4EE3;&#x7801;&#xFF0C;&#x624B;&#x52A8;&#x5C06;&#x8FD9;&#x4E9B;&#x6A21;&#x677F;&#x5E94;&#x7528;&#x5230;&#x5B9E;&#x9645;&#x7684;&#x4FEE;&#x590D;&#x4E2D;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5982;&#x679C;&#x5E94;&#x7528;&#x5728;&#x663E;&#x793A;&#x5BF9;&#x8BDD;&#x6846;&#x65F6;&#x5D29;&#x6E83;&#xFF0C;&#x5F00;&#x53D1;&#x8005;&#x9700;&#x8981;&#x5728;&#x4EE3;&#x7801;&#x4E2D;&#x6DFB;&#x52A0;&#x7C7B;&#x4F3C;&#x4EE5;&#x4E0B;&#x7684;&#x68C0;&#x67E5;&#xFF1A;</p>
+<p>javaCopy</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!activity.isFinishing) {</span><br><span class="line">    alertDialogBuilder.show();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>&#x6A21;&#x677F;&#x7684;&#x7075;&#x6D3B;&#x6027;</strong>&#xFF1A;</p>
+<ul>
+<li><p>&#x8FD9;&#x4E9B;&#x6A21;&#x677F;&#x63D0;&#x4F9B;&#x4E86;&#x901A;&#x7528;&#x7684;&#x4FEE;&#x590D;&#x601D;&#x8DEF;&#xFF0C;&#x4F46;&#x5177;&#x4F53;&#x7684;&#x5B9E;&#x73B0;&#x7EC6;&#x8282;&#x9700;&#x8981;&#x5F00;&#x53D1;&#x8005;&#x6839;&#x636E;&#x5E94;&#x7528;&#x7684;&#x5B9E;&#x9645;&#x60C5;&#x51B5;&#x8FDB;&#x884C;&#x8C03;&#x6574;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5BF9;&#x4E8E; <code>IllegalArgumentException</code> &#x5F02;&#x5E38;&#xFF0C;CraftDroid &#x63D0;&#x4F9B;&#x4E86; <strong>Provider Checker</strong> &#x6A21;&#x677F;&#xFF0C;&#x5EFA;&#x8BAE;&#x5728;&#x8BF7;&#x6C42;&#x4F4D;&#x7F6E;&#x66F4;&#x65B0;&#x4E4B;&#x524D;&#x68C0;&#x67E5;&#x4F4D;&#x7F6E;&#x63D0;&#x4F9B;&#x8005;&#x662F;&#x5426;&#x53EF;&#x7528;&#xFF1A;</p>
+<p>javaCopy</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (locationManager.isProviderEnabled(<span class="string">&quot;network&quot;</span>)) {</span><br><span class="line">    locationManager.requestLocationUpdates(<span class="string">&quot;network&quot;</span>, <span class="number">5000L</span>, <span class="number">100.0F</span>, <span class="built_in">this</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="&#x603B;&#x7ED3;"><a href="#&#x603B;&#x7ED3;" class="headerlink" title="&#x603B;&#x7ED3;"></a>&#x603B;&#x7ED3;</h3><p>CraftDroid &#x63D0;&#x4F9B;&#x7684;&#x662F;<strong>&#x4FEE;&#x6539;&#x6A21;&#x677F;</strong>&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x76F4;&#x63A5;&#x7684;&#x4FEE;&#x590D;&#x4EE3;&#x7801;&#x3002;&#x5F00;&#x53D1;&#x8005;&#x9700;&#x8981;&#x6839;&#x636E;&#x5177;&#x4F53;&#x7684;&#x5D29;&#x6E83;&#x60C5;&#x51B5;&#x548C;&#x5E94;&#x7528;&#x4EE3;&#x7801;&#xFF0C;&#x624B;&#x52A8;&#x5E94;&#x7528;&#x8FD9;&#x4E9B;&#x6A21;&#x677F;&#x6765;&#x4FEE;&#x590D;&#x95EE;&#x9898;&#x3002;&#x8FD9;&#x79CD;&#x65B9;&#x6CD5;&#x65E2;&#x63D0;&#x4F9B;&#x4E86;&#x4FEE;&#x590D;&#x7684;&#x6307;&#x5BFC;&#xFF0C;&#x53C8;&#x4FDD;&#x6301;&#x4E86;&#x8DB3;&#x591F;&#x7684;&#x7075;&#x6D3B;&#x6027;&#xFF0C;&#x4EE5;&#x9002;&#x5E94;&#x4E0D;&#x540C;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;&#x3002;</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://imomi263.github.io">imomi263</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://imomi263.github.io/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AMining-Android-crash-fixes-in-the-absence-of-issue-and-change-tracking-systems/">https://imomi263.github.io/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AMining-Android-crash-fixes-in-the-absence-of-issue-and-change-tracking-systems/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://imomi263.github.io" target="_blank">时光之歌</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/">论文阅读</a></div><div class="post_share"><div class="social-share" data-image="/img/flower.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ANPEX-repairing-Java-null-pointer-exceptions-without-tests/" title="阅读笔记：NPEX: repairing Java null pointer exceptions without tests"><img class="cover" src="/img/meme6.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">阅读笔记：NPEX: repairing Java null pointer exceptions without tests</div></div></a></div><div class="next-post pull-right"><a href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AKG4CraSolver-Recommending-Crash-Solutions-via-Knowledge-Graph/" title="阅读笔记：KG4CraSolver: Recommending Crash Solutions via Knowledge Graph"><img class="cover" src="/img/meme4.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">阅读笔记：KG4CraSolver: Recommending Crash Solutions via Knowledge Graph</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/12/25/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-Resolving-Crash-Bugs-via-Large-Language-Models-An-Empirical-Study/" title="阅读笔记 Resolving Crash Bugs via Large Language Models: An Empirical Study"><img class="cover" src="/img/meme4.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-25</div><div class="title">阅读笔记 Resolving Crash Bugs via Large Language Models: An Empirical Study</div></div></a></div><div><a href="/2024/12/26/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ACrashLocator-Locating-Crashing-Faults-Based-on-Crash-Stacks/" title="阅读笔记：CrashLocator: Locating Crashing Faults Based on Crash Stacks"><img class="cover" src="/img/flower.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-26</div><div class="title">阅读笔记：CrashLocator: Locating Crashing Faults Based on Crash Stacks</div></div></a></div><div><a href="/2025/01/02/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AREPT-Reverse-Debugging-of-Failures-in-Deployed-Software/" title="阅读笔记：REPT: Reverse Debugging of Failures in Deployed Software"><img class="cover" src="/img/meme6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-02</div><div class="title">阅读笔记：REPT: Reverse Debugging of Failures in Deployed Software</div></div></a></div><div><a href="/2025/01/01/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ARETracer-Triaging-Crashes-by-Reverse-Execution-from-Partial-Memory-Dumps/" title="阅读笔记：RETracer: Triaging Crashes by Reverse Execution from Partial Memory Dumps"><img class="cover" src="/img/meme5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-01</div><div class="title">阅读笔记：RETracer: Triaging Crashes by Reverse Execution from Partial Memory Dumps</div></div></a></div><div><a href="/2024/12/27/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-Postmortem-Program-Analysis-with-Hardware-Enhanced-Post-Crash-Artifacts/" title="阅读笔记: Postmortem Program Analysis with Hardware-Enhanced Post-Crash Artifacts"><img class="cover" src="/img/meme5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-27</div><div class="title">阅读笔记: Postmortem Program Analysis with Hardware-Enhanced Post-Crash Artifacts</div></div></a></div><div><a href="/2024/12/30/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ADEEPVSA-Facilitating-Value-set-Analysis-with-Deep-Learning-for-Postmortem-Program-Analysis/" title="阅读笔记：DEEPVSA: Facilitating Value-set Analysis with Deep Learning for Postmortem Program Analysis"><img class="cover" src="/img/meme4.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-30</div><div class="title">阅读笔记：DEEPVSA: Facilitating Value-set Analysis with Deep Learning for Postmortem Program Analysis</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/cat.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">imomi263</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">54</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/imomi263"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/imomi263" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:imomi263@foxmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB"><span class="toc-number">1.</span> <span class="toc-text">技术方案详细解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF%E4%B8%8E%E6%8C%91%E6%88%98"><span class="toc-number">1.1.</span> <span class="toc-text">研究背景与挑战</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88%EF%BC%9ACraftDroid%E6%A1%86%E6%9E%B6"><span class="toc-number">1.2.</span> <span class="toc-text">技术方案：CraftDroid框架</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Phase-I%EF%BC%9A%E5%B4%A9%E6%BA%83%E4%BF%AE%E5%A4%8D%E6%8C%96%E6%8E%98"><span class="toc-number">2.</span> <span class="toc-text">Phase I：崩溃修复挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E5%BA%94%E7%94%A8%E8%B0%B1%E7%B3%BB%E6%9E%84%E5%BB%BA%EF%BC%88App-Lineage-Construction%EF%BC%89"><span class="toc-number">2.0.1.</span> <span class="toc-text">1. 应用谱系构建（App Lineage Construction）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%B4%A9%E6%BA%83%E6%8E%A2%E7%B4%A2%EF%BC%88App-Crash-Exploration%EF%BC%89"><span class="toc-number">2.0.2.</span> <span class="toc-text">2. 崩溃探索（App Crash Exploration）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-%E4%BF%AE%E5%A4%8D%E9%AA%8C%E8%AF%81%EF%BC%88App-Fix-Verification%EF%BC%89"><span class="toc-number">2.0.3.</span> <span class="toc-text">3. 修复验证（App Fix Verification）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Phase-II%EF%BC%9A%E4%BF%AE%E5%A4%8D%E6%A8%A1%E6%9D%BF%E6%8A%BD%E8%B1%A1"><span class="toc-number">3.</span> <span class="toc-text">Phase II：修复模板抽象</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-%E4%BF%AE%E5%A4%8D%E5%88%86%E7%BB%84%EF%BC%88Fix-Grouping%EF%BC%89"><span class="toc-number">3.0.1.</span> <span class="toc-text">4. 修复分组（Fix Grouping）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-%E4%BF%AE%E5%A4%8D%E6%A8%A1%E6%9D%BF%E6%8A%BD%E8%B1%A1%EF%BC%88Fix-Template-Abstraction%EF%BC%89"><span class="toc-number">3.0.2.</span> <span class="toc-text">5. 修复模板抽象（Fix Template Abstraction）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">关键技术点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%8E%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">实验与评估</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E6%9C%AA%E6%9D%A5%E5%B7%A5%E4%BD%9C"><span class="toc-number">6.</span> <span class="toc-text">局限性与未来工作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="toc-number"></span> <span class="toc-text">相关工作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Android%E5%B4%A9%E6%BA%83%E5%88%86%E6%9E%90%EF%BC%88Android-Crash-Analysis%EF%BC%89"><span class="toc-number">0.1.</span> <span class="toc-text">1. Android崩溃分析（Android Crash Analysis）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Android%E5%BA%94%E7%94%A8%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%B0%83%E8%AF%95%EF%BC%88Android-App-Testing-and-Analysis%EF%BC%89"><span class="toc-number">0.2.</span> <span class="toc-text">2. Android应用测试与调试（Android App Testing and Analysis）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-Android%E5%85%BC%E5%AE%B9%E6%80%A7%E4%B8%8E%E7%A2%8E%E7%89%87%E5%8C%96%E7%A0%94%E7%A9%B6%EF%BC%88Android-Compatibility-and-Fragmentation%EF%BC%89"><span class="toc-number">0.3.</span> <span class="toc-text">3. Android兼容性与碎片化研究（Android Compatibility and Fragmentation）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%A8%8B%E5%BA%8F%E4%BF%AE%E5%A4%8D%EF%BC%88Automated-Program-Repair-APR%EF%BC%89"><span class="toc-number">0.4.</span> <span class="toc-text">4. 自动化程序修复（Automated Program Repair, APR）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E5%B4%A9%E6%BA%83%E5%A4%8D%E7%8E%B0%E6%8A%80%E6%9C%AF%EF%BC%88Crash-Reproduction%EF%BC%89"><span class="toc-number">0.5.</span> <span class="toc-text">5. 崩溃复现技术（Crash Reproduction）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E6%9C%AC%E6%96%87%E4%B8%8E%E7%8E%B0%E6%9C%89%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%A0%B8%E5%BF%83%E5%B7%AE%E5%BC%82"><span class="toc-number">1.</span> <span class="toc-text">总结：本文与现有工作的核心差异</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E5%A4%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number"></span> <span class="toc-text">修复模板</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">具体说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AWhich-Crashes-Should-I-Fix-First-Predicting-Top-Crashes-at-an-Early-Stage-to-Prioritize-Debugging-Effort/" title="阅读笔记：Which Crashes Should I Fix First  Predicting Top Crashes at an Early Stage  to Prioritize Debugging Effort"><img src="/img/meme5.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读笔记：Which Crashes Should I Fix First  Predicting Top Crashes at an Early Stage  to Prioritize Debugging Effort"/></a><div class="content"><a class="title" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AWhich-Crashes-Should-I-Fix-First-Predicting-Top-Crashes-at-an-Early-Stage-to-Prioritize-Debugging-Effort/" title="阅读笔记：Which Crashes Should I Fix First  Predicting Top Crashes at an Early Stage  to Prioritize Debugging Effort">阅读笔记：Which Crashes Should I Fix First  Predicting Top Crashes at an Early Stage  to Prioritize Debugging Effort</a><time datetime="2025-02-15T06:53:27.000Z" title="发表于 2025-02-15 14:53:27">2025-02-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AWhat-IF-Is-Not-Enough-Fixing-Null-Pointer-Dereference-With-Contextual-Check/" title="阅读笔记：What IF Is Not Enough? Fixing Null Pointer Dereference With Contextual Check"><img src="/img/meme5.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读笔记：What IF Is Not Enough? Fixing Null Pointer Dereference With Contextual Check"/></a><div class="content"><a class="title" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AWhat-IF-Is-Not-Enough-Fixing-Null-Pointer-Dereference-With-Contextual-Check/" title="阅读笔记：What IF Is Not Enough? Fixing Null Pointer Dereference With Contextual Check">阅读笔记：What IF Is Not Enough? Fixing Null Pointer Dereference With Contextual Check</a><time datetime="2025-02-15T06:52:29.000Z" title="发表于 2025-02-15 14:52:29">2025-02-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AVFix-Value-Flow-Guided-Precise-Program-Repair-for-Null-Pointer-Dereferences/" title="阅读笔记：VFix: Value-Flow-Guided Precise Program Repair for Null Pointer Dereferences"><img src="/img/meme3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读笔记：VFix: Value-Flow-Guided Precise Program Repair for Null Pointer Dereferences"/></a><div class="content"><a class="title" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AVFix-Value-Flow-Guided-Precise-Program-Repair-for-Null-Pointer-Dereferences/" title="阅读笔记：VFix: Value-Flow-Guided Precise Program Repair for Null Pointer Dereferences">阅读笔记：VFix: Value-Flow-Guided Precise Program Repair for Null Pointer Dereferences</a><time datetime="2025-02-15T06:51:40.000Z" title="发表于 2025-02-15 14:51:40">2025-02-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ASemantic-crash-bucketing/" title="阅读笔记：Semantic crash bucketing"><img src="/img/flower.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读笔记：Semantic crash bucketing"/></a><div class="content"><a class="title" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ASemantic-crash-bucketing/" title="阅读笔记：Semantic crash bucketing">阅读笔记：Semantic crash bucketing</a><time datetime="2025-02-15T06:50:28.000Z" title="发表于 2025-02-15 14:50:28">2025-02-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ARepairing-crashes-in-Android-apps/" title="阅读笔记：Repairing crashes in Android apps"><img src="/img/cat2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读笔记：Repairing crashes in Android apps"/></a><div class="content"><a class="title" href="/2025/02/15/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9ARepairing-crashes-in-Android-apps/" title="阅读笔记：Repairing crashes in Android apps">阅读笔记：Repairing crashes in Android apps</a><time datetime="2025-02-15T06:49:00.000Z" title="发表于 2025-02-15 14:49:00">2025-02-15</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By imomi263</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
